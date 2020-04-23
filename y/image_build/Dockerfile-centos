@@ -1,0 +1,73 @@
+# rocketmq image base on centos:7
+# in this,we will do 3 things
+# step 1 perpare env all of the needs 
+#       add user
+#       add other
+
+# staring ---------------------------------------------------------
+
+#FROM centos:7
+FROM werewolf666/maven
+MAINTAINER werewolf666
+
+# step 1 if you use centos:7-----------------------------------------------------------
+# install jdk8+,unzip,gettext,nmap-ncat openssl, which gnupg, telnet
+# RUN yum install -y java-1.8.0-openjdk-devel.x86_64 unzip gettext nmap-ncat openssl, which gnupg, telnet \
+# && yum clean all -y
+
+# step 2 ----------------------------------------------------------
+# add user and group
+# by trans
+ARG user=rocketmq
+ARG group=rocketmq
+ARG uid=3000
+ARG gid=3000
+# rocketmq run at the user
+RUN groupadd -g ${gid} ${group} \
+    && useradd -u ${uid} -g ${gid} -m -s /bin/bash ${user}
+
+# step 3 install mq
+ARG version
+ENV ROCKETMQ_VERSION {$version}
+ENV ROCKETMQ_HOME /home/rocketmq/rocketmq-${ROCKETMQ_VERSION}
+WORKDIR  ${ROCKETMQ_HOME}
+
+# do this if you want doanload the rmq binary file by internet
+# RUN set -eux; \
+#    curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip -o rocketmq.zip; \
+#    curl https://archive.apache.org/dist/rocketmq/${ROCKETMQ_VERSION}/rocketmq-all-${ROCKETMQ_VERSION}-bin-release.zip.asc -o rocketmq.zip.asc; \
+#	curl https://www.apache.org/dist/rocketmq/KEYS -o KEYS; \
+#	gpg --import KEYS; \
+#    gpg --batch --verify rocketmq.zip.asc rocketmq.zip ; \
+#   unzip rocketmq.zip ; \
+#	mv rocketmq-all*/* . ; \
+#	rmdir rocketmq-all*  ; \
+#	rm rocketmq.zip rocketmq.zip.asc KEYS
+
+# do this if you allready download the binary file 
+COPY rocketmq-all-4.7.0-bin-release.zip rocketmq.zip
+RUN unzip rocketmq.zip ; \
+    mv rocketmq-all* . ; \
+    rmdir rocketmq-all* ; \
+    rm rocketmq.zip
+
+# add scripts to bin
+COPY scripts/ ${ROCKETMQ_HOME}/bin/
+RUN chown -R ${uid}:${gid} ${ROCKETMQ_HOME}
+
+# recover bin/runserver.sh and /bin/runbroker.sh
+RUN mv ${ROCKETMQ_HOME}/bin/runserver-customize.sh ${ROCKETMQ_HOME}/bin/runserver.sh \
+ && chmod a+x ${ROCKETMQ_HOME}/bin/runserver.sh \
+ && chmod a+x ${ROCKETMQ_HOME}/bin/mqnamesrv \
+ && mv ${ROCKETMQ_HOME}/bin/runbroker-customize.sh ${ROCKETMQ_HOME}/bin/runbroker.sh \
+ && chmod a+x ${ROCKETMQ_HOME}/bin/runbroker.sh \
+ && chmod a+x ${ROCKETMQ_HOME}/bin/mqbroker
+
+# export ports
+EXPOSE 9876
+EXPOSE 10909 10911 10912
+
+USER ${user}
+
+WORKDIR ${ROCKETMQ_HOME}/bin
+
