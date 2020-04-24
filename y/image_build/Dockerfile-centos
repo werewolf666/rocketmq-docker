@@ -1,19 +1,12 @@
-# rocketmq image base on centos:7
-# in this,we will do 3 things
-# step 1 perpare env all of the needs 
-#       add user
-#       add other
-
-# staring ---------------------------------------------------------
-
 #FROM centos:7
 FROM werewolf666/maven
-MAINTAINER werewolf666
 
 # step 1 if you use centos:7-----------------------------------------------------------
 # install jdk8+,unzip,gettext,nmap-ncat openssl, which gnupg, telnet
 # RUN yum install -y java-1.8.0-openjdk-devel.x86_64 unzip gettext nmap-ncat openssl, which gnupg, telnet \
 # && yum clean all -y
+
+RUN yum install -y unzip
 
 # step 2 ----------------------------------------------------------
 # add user and group
@@ -29,7 +22,7 @@ RUN groupadd -g ${gid} ${group} \
 # step 3 install mq
 ARG version
 ENV ROCKETMQ_VERSION {$version}
-ENV ROCKETMQ_HOME /home/rocketmq/rocketmq-${ROCKETMQ_VERSION}
+ENV ROCKETMQ_HOME /home/rocketmq/rocketmq-all-${ROCKETMQ_VERSION}-bin-release
 WORKDIR  ${ROCKETMQ_HOME}
 
 # do this if you want doanload the rmq binary file by internet
@@ -45,9 +38,9 @@ WORKDIR  ${ROCKETMQ_HOME}
 #	rm rocketmq.zip rocketmq.zip.asc KEYS
 
 # do this if you allready download the binary file 
-COPY rocketmq-all-4.7.0-bin-release.zip rocketmq.zip
+COPY rocketmq-all-${version}-bin-release.zip rocketmq.zip
 RUN unzip rocketmq.zip ; \
-    mv rocketmq-all* . ; \
+    mv rocketmq-all*/* . ; \
     rmdir rocketmq-all* ; \
     rm rocketmq.zip
 
