@@ -1,3 +1,17 @@
 stages/
-
 .idea/
+# rocketmq logs
+test/templates/docker-compose/data/broker/logs/*
+test/templates/docker-compose/data1/broker/logs/*
+test/templates/docker-compose/data2/broker/logs/*
+test/templates/docker-compose/data3/broker/logs/*
+test/templates/docker-compose/data/namesrc/logs/*
+test/templates/docker-compose/data1/namesrc/logs/*
+test/templates/docker-compose/data2/namesrc/logs/*
+test/templates/docker-compose/data3/namesrc/logs/*
+
+# rocketmq store
+test/templates/docker-compose/data/broker/store/*
+test/templates/docker-compose/data1/broker/store/*
+test/templates/docker-compose/data2/broker/store/*
+test/templates/docker-compose/data3/broker/store/*
