@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 RMQ_CONTAINER=$(docker ps -a|awk '/rmq/ {print $1}')
 if [[ -n "$RMQ_CONTAINER" ]]; then
    echo "Removing RocketMQ Container..."
