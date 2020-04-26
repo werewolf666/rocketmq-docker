@@ -15,3 +15,5 @@ test/templates/docker-compose/data/broker/store/*
 test/templates/docker-compose/data1/broker/store/*
 test/templates/docker-compose/data2/broker/store/*
 test/templates/docker-compose/data3/broker/store/*
+
+__pycache__/*

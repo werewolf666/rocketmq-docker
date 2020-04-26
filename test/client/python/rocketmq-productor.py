@@ -32,6 +32,7 @@ class RocketProducer():
 		return response	
 	# 发送延时消息 level 为延时等级，总共12级 最大2h
 	def sendDelay(self,topic,msg,group='',keys='',tags='',level=None):
+		pass
 	# 获取消息队列实例
 	def getMessageInstance(self,topic):
 		self.message = Message(topic)

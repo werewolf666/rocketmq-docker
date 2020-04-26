@@ -1,0 +1,128 @@
+version: '2'
+networks:
+  rocketmq_net:
+    # ipam:
+    #   config:
+    #     - subnet: 172.21.0.4/16
+services:
+  #Service for nameserver
+  namesrv1:
+    image: werewolf666/rocketmq:4.7.0
+    container_name: namesrv1
+    ports:
+      - 50047:9876
+    volumes:
+      - ./data/namesrv/logs:/home/rocketmq/logs
+    command: sh mqnamesrv
+    networks:
+      - rocketmq_net
+        # ipv4_address: 172.21.0.4
+
+  # #Service for nameserver
+  # namesrv2:
+  #   image: werewolf666/rocketmq:4.7.0
+  #   container_name: namesrv2
+  #   ports:
+  #     - 50041:9876
+  #   volumes:
+  #     - ./data1/namesrv/logs:/home/rocketmq/logs
+  #   command: sh mqnamesrv
+  #   networks:
+  #     rocketmq_net:
+  #       ipv4_address: 172.21.0.5
+
+  #Service for broker
+  broker-a:
+    image: werewolf666/rocketmq:4.7.0
+    container_name: broker-a
+    links:
+      - namesrv1
+      # - namesrv2
+    ports:
+      - 50042:10911
+    environment:
+      # - NAMESRV_ADDR=namesrv1:9876;namesrv2:9876
+      - NAMESRV_ADDR=namesrv1:9876
+    volumes:
+      - ./data/broker/logs:/home/rocketmq/logs
+      - ./data/broker/store:/home/rocketmq/store
+      - ./data/broker/conf/broker.conf:/opt/rocketmq-4.7.0/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-4.7.0/conf/broker.conf
+    networks:
+      - rocketmq_net
+        # ipv4_address: 172.21.0.6
+
+  # #Service for another broker -- broker1
+  # broker-a-s:
+  #   image: werewolf666/rocketmq:4.7.0
+  #   container_name: broker-a-s
+  #   links:
+  #     - namesrv1
+  #     - namesrv2
+  #   ports:
+  #     - 50043:10911
+  #   environment:
+  #     - NAMESRV_ADDR=namesrv1:9876;namesrv2:9876
+  #   volumes:
+  #     - ./data1/broker/logs:/home/rocketmq/logs
+  #     - ./data1/broker/store:/home/rocketmq/store
+  #     - ./data1/broker/conf/broker.conf:/opt/rocketmq-4.7.0/conf/broker.conf
+  #   command: sh mqbroker -c /opt/rocketmq-4.7.0/conf/broker.conf
+  #   networks:
+  #     rocketmq_net:
+  #       ipv4_address: 172.21.0.7
+
+  # # Service for another broker -- broker1
+  # broker-b:
+  #   image: werewolf666/rocketmq:4.7.0
+  #   container_name: broker-b
+  #   links:
+  #     - namesrv1
+  #     - namesrv2
+  #   ports:
+  #     - 50044:10911
+  #   environment:
+  #     - NAMESRV_ADDR=namesrv1:9876;namesrv2:9876
+  #   volumes:
+  #     - ./data2/broker/logs:/home/rocketmq/logs
+  #     - ./data2/broker/store:/home/rocketmq/store
+  #     - ./data2/broker/conf/broker.conf:/opt/rocketmq-4.7.0/conf/broker.conf
+  #   command: sh mqbroker -c /opt/rocketmq-4.7.0/conf/broker.conf
+  #   networks:
+  #     rocketmq_net:
+  #       ipv4_address: 172.21.0.8
+
+  # #  Service for another broker -- broker1
+  # broker-b-s:
+  #   image: werewolf666/rocketmq:4.7.0
+  #   container_name: broker-b-s
+  #   links:
+  #     - namesrv1
+  #     - namesrv2
+  #   ports:
+  #     - 50045:10911
+  #   environment:
+  #     - NAMESRV_ADDR=namesrv1:9876;namesrv2:9876
+  #   volumes:
+  #     - ./data3/broker/logs:/home/rocketmq/logs
+  #     - ./data3/broker/store:/home/rocketmq/store
+  #     - ./data3/broker/conf/broker.conf:/opt/rocketmq-4.7.0/conf/broker.conf
+  #   command: sh mqbroker -c /opt/rocketmq-4.7.0/conf/broker.conf
+  #   networks:
+  #     rocketmq_net:
+  #       ipv4_address: 172.21.0.9
+
+  rmqconsole:
+    image: styletang/rocketmq-console-ng
+    container_name: rmqconsole
+    ports:
+      - 50046:8080
+    environment:
+        # JAVA_OPTS: -Drocketmq.namesrv.addr=namesrv1:9876;namesrv2:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false
+        JAVA_OPTS: -Drocketmq.namesrv.addr=namesrv1:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false
+    networks:
+      - rocketmq_net
+        # ipv4_address: 172.21.0.10
+
+
+
